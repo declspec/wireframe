@@ -4,6 +4,6 @@ class HomeController {
     }   
     
     public function index($app) {
-        $app->renderer()->render("home/index");
+        echo "<h1>Welcome to WireFrame</h1>";
     }
 };

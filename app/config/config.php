@@ -25,7 +25,6 @@ return array(
     "modules" => array(
         "core",
         "controllers",
-        "routes",
-        "components"
+        "routes"
     ),
 );

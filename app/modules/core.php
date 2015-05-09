@@ -18,7 +18,7 @@ class CoreModule implements IModule {
         $app->registerComponent("settings", function() use(&$settings) {
             require(__DIR__ . "/../config/settings.php");
             return new SettingsComponent($settings);
-        })->registerComponent("session", $ioc->resolve("Session"))
+        })->registerComponent("session", $ioc->resolve("Session"));
     }
 };
 ?>
