@@ -1,0 +1,17 @@
+# Node rules
+node_modules/
+
+# Sass rules
+.sass-cache/
+*.css.map
+
+# Generated files from Grunt
+public/js/[0-9]*.[0-9]*.[0-9]/
+
+# General rules
+*.log
+*.log
+*.bak
+*.bin
+*.old
+*.tmp
