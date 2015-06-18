@@ -1,0 +1,26 @@
+<div class="row page-header">
+    <div class="col-sm-6 col-sm-offset-3">
+        <h2 class="text-center">Login to {{APP_TITLE}}</h2>
+        
+        <div ng-show="!loading && errors" class="alert alert-danger">
+            <p>The following errors occured during login:</p>
+            <ul style="padding: 10px 0px 10px 40px">
+                <li ng-repeat="error in errors">{{error}}</li>
+            </ul>
+        </div>
+        
+        <form name="login" novalidate ng-submit="submit()">
+            <div form-control="email" class="form-group" message="A valid email is address is required.">
+                <label for="email">Email address:</label>
+                <input type="email" id="email" name="email" class="form-control" ng-model="auth.email" ng-model-options="{ updateOn: 'blur' }" required />
+            </div>
+            <div form-control="password" class="form-group" message="Please enter a password.">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" ng-model="auth.password" required />
+            </div>
+            <button type="submit" class="btn btn-warning" ng-hide="loading">Log in</button>
+            <i ajax-loader="loading" size="small">&nbsp;</i>
+            <a ui-sref="register">Not a member?</a>
+        </form>
+    </div>
+</div>

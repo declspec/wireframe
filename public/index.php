@@ -1,5 +1,5 @@
 <?php
-require './app/application.php';
+require '../app/application.php';
 
 // Translate json POST requests into a format that PHP understands
 if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
@@ -8,7 +8,7 @@ if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && stripos($_SERVER['CO
 }
 
 // Build the application
-$config = require('./app/config/config.php');
+$config = require('../app/config/config.php');
 $app = new Application($config);
 
 // Enable logging if debugging

@@ -1,0 +1,42 @@
+<div class="row page-header">
+    <div class="col-sm-6 col-sm-offset-3">
+        <div ng-if="!user.id">
+            <div class="text-center">
+                <h2>Register an account</h2>
+            </div>
+            
+            <div ng-show="!loading && errors" class="alert alert-danger">
+                <p>The following errors occured are preventing you from registering:</p>
+                <ul style="padding: 10px 0px 10px 40px">
+                    <li ng-repeat="error in errors">{{error}}</li>
+                </ul>
+            </div>
+
+            <form name="register" novalidate ng-submit="submit()">
+                <div form-control="email" class="form-group" message="A valid email is address is required.">
+                    <label for="email">Email address:</label>
+                    <input type="email" id="email" name="email" class="form-control" ng-model="user.email" ng-model-options="{ updateOn: 'blur' }" required />
+                </div>
+                <div form-control="friendly" class="form-group" message="Please specify a display name.">
+                    <label for="friendly">Display name:</label>
+                    <input type="text" id="friendly" name="friendly" class="form-control" ng-model="user.friendly" required />
+                </div>
+                <div form-control="password" class="form-group" message="Please enter a password.">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" ng-model="user.password" required />
+                </div>
+                <div form-control="repeatPassword" class="form-group" message="Please repeat the above password.">
+                    <label for="repeatPassword">Repeat password:</label>
+                    <input type="password" id="repeatPassword" name="repeatPassword" class="form-control" ng-model="user.repeatPassword" required />
+                </div>
+
+                <button type="submit" class="btn btn-warning" ng-hide="loading">Register!</button>
+                <i ajax-loader="loading" size="small">&nbsp;</i>
+            </form>
+        </div>
+        
+        <div ng-if="user.id" class="alert alert-success">
+           <p>You have successfully registered your account. You can now <a href ui-sref="login">login</a> and look for guilds to join!</p>
+        </div>
+    </div>
+</div>

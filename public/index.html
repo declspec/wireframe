@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="my-app">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
+        <title ng-bind="(STATE_TITLE || 'Untitled') + ' | ' + APP_TITLE">Guilds App</title>
+        
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    
+    <body ng-cloak class="ng-cloak">
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href ui-sref="index" class="navbar-brand">{{ APP_TITLE }}</a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div ui-view class="container"></div>
+        <div modal-dialog></div>
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.14/angular-ui-router.js"></script>
+        
+        <script src="js/1.0.0/config.js"></script>
+        <script src="js/1.0.0/providers.js"></script>
+        <script src="js/1.0.0/services.js"></script>
+        <script src="js/1.0.0/directives.js"></script>
+        <script src="js/1.0.0/controllers.js"></script>
+    </body>
+</html>

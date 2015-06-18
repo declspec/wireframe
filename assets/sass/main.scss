@@ -1,0 +1,56 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+body:last-child:after {
+    clear: both;   
+}
+
+[modal-dialog], .modal-dialog { 
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal-dialog-wrapper {
+    position: absolute;
+    top: 50%; left: 50%;              
+    margin-top: -50px;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);   
+}
+
+.ajax-loader {
+    background-repeat: no-repeat;
+    background-position: center center;
+    display: inline-block;
+}
+
+.ajax-loader-big {
+    background-image: url('../images/ajax-loader_64x64.gif');
+    width: 64px;
+    height: 64px;
+}
+
+.ajax-loader-medium {
+    background-image: url('../images/ajax-loader_48x48.gif');
+    width: 48px;
+    height: 48px;
+}
+
+.ajax-loader-small {
+    background-image: url('../images/ajax-loader_32x32.gif');   
+    width: 32px;
+    height: 32px;
+}
+
+form {
+    .error-message {
+        color: red;
+        display: block;
+        padding-top: 5px;
+    }
+}
