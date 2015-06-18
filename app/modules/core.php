@@ -6,7 +6,7 @@ class CoreModule implements IModule {
         $settings = isset($config["settings"]) ? $config["settings"] : array();
     
         $ioc->singleton("DatabaseConnection", function() use(&$app,&$config) {
-            require(__DIR__ . "/../lib/SQLExt.php");
+            require(__DIR__ . "/../lib/sqlext.php");
             return new SQLExt(
                 $app,
                 $config["db"]["connectionString"], 
