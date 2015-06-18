@@ -20,7 +20,7 @@
                     if (!success)
                         $scope.errors = data;
                     else {
-                        User.login();
+                        User.login(data);
                         // Allow controller to be used in a modal context
                         ("undefined" !== typeof($scope.close)
                             ? $scope.close(DialogResult.Success, data)

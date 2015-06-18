@@ -2,12 +2,12 @@
     "use strict";
     
     ng.module("shared").factory("User", [ function() {
-        var loggedIn = false;
+        var user = null;
         
         return {
-            isAuthenticated: function() { return loggedIn; },
-            login: function() { loggedIn = true; },
-            logout: function() { loggedIn = false }
+            isAuthenticated: function() { return !!user; },
+            login: function(state) { user = state; },
+            logout: function() { user = null; }
         };
     }]);
 }(angular));

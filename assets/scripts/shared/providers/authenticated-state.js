@@ -13,7 +13,7 @@
                 else {
                     AuthService.passiveAuthenticate(function(success, user) {
                         if (success) 
-                            User.login(user.uid, user.sid, user.friendly);
+                            User.login(user);
                         return defer.resolve();
                     });
                 }
