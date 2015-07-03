@@ -1,5 +1,7 @@
 RewriteEngine On
 
+RewriteRule ^$ index.html
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-d [OR]
