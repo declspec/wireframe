@@ -14,9 +14,9 @@ return array(
     
     // Core config
     "db" => array(
-        "connectionString"  => "mysql:host=localhost;dbname=example_mysql",
-        "username"          => "user",
-        "password"          => "***"
+        "connectionString"  => $secret["db"]["connectionString"],
+        "username"          => $secret["db"]["user"],
+        "password"          => $secret["db"]["password"]
     ),
     "session" => array(
         "timeout" => 20,

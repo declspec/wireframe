@@ -16,5 +16,5 @@ public/js/[0-9]*.[0-9]*.[0-9]/
 *.old
 *.tmp
 
-# ignore the config file
-app/config/config.php
+# ignore the secret file
+app/config/secret.php

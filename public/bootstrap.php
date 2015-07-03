@@ -7,7 +7,14 @@ if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && stripos($_SERVER['CO
     $_POST = empty($json) ? array() : json_decode($json, true);
 }
 
-// Build the application
+//
+// Build the application 
+//
+
+// Construct the senstive data separately so that it can be used safely in config
+if (!$secret = (@include('../app/config/secret.php')))
+    $secret = array();
+    
 $config = require('../app/config/config.php');
 $app = new Application($config);
 
