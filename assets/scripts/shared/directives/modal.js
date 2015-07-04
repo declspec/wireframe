@@ -13,7 +13,7 @@
         Error: 2
     });
     
-    module.directive("modalDialog", [ "$modalDialog", "DialogResult", function($modalDialog, DialogResult) {
+    module.directive("modalDialog", [ "$modalDialog", "$document", "DialogResult", function($modalDialog, $document, DialogResult) {
         return {
             restrict: "ECA",
             priority: 400,
@@ -23,19 +23,21 @@
                 var currentScope,
                     currentElement,
                     currentDialog;
-                                
+                
+                if (attr["modalDialog"] === "root") {
+                    // Shift element to body tag
+                    var $body = ng.element($document[0].body);
+                    $element.detach();
+                    $body.append($element);
+                }
+
                 scope.$on("$dialogChangeSuccess", update);
                 update();
                 
                 function cleanup() {
                     if (currentScope) {
-                        // Calling currentScope.close here will result in infinite recursion
-                        if (!currentScope.__closed && currentDialog && currentDialog.callback)
-                            currentDialog.callback(DialogResult.Cancelled);
-                        
                         currentScope.$destroy();
                         currentScope = null;
-                        currentDialog = null;
                     }
                     
                     if (currentElement) {
@@ -45,41 +47,34 @@
                 }
                 
                 function update() {
-                    var current = currentDialog = $modalDialog.current,
+                    var current = $modalDialog.current,
                         locals = current && current.locals,
                         template = locals && locals.$template;
+                    
+                    // If replacing an existing dialog that has yet to be 
+                    // closed...
+                    if (currentDialog && currentDialog.callback)
+                        currentDialog.callback(DialogResult.Cancelled);
+
+                    currentDialog = current;
 
                     if (!current || ng.isUndefined(template))
                         cleanup();
                     else {
-                        var newScope = scope.$new(),
-                            cancellable = current.cancellable !== false;
-                        
-                        newScope.__closed = false;
+                        var newScope = scope.$new();
                         
                         $transclude(newScope, function(clone) {
                             cleanup();
-                            
-                            if (cancellable) {
-                                // Bind the click event to close the dialog with the "Cancelled" reason
-                                clone.bind("click", function() {
-                                    newScope.close(DialogResult.Cancelled); 
-                                });
-                            }
-                            
                             $element.after(currentElement = clone);
                         });
                         
                         newScope.close = function() {
-                            if (!newScope.__closed) {
-                                // Important to set __closed before cleanup as cleanup
-                                // will also invoke the callback with the "Cancelled" reason                                
-                                newScope.__closed = true;
-                                cleanup();
-                                
-                                if (current.callback)
-                                    current.callback.apply(null, arguments);
-                            }
+                            cleanup();
+                            if (current.callback)
+                                current.callback.apply(null, arguments);
+                            
+                            if (current === currentDialog)
+                                currentDialog = null;
                         };
                             
                         // Give the 'current' dialog a close method
@@ -93,35 +88,49 @@
         };
     }]);
     
-    module.directive("modalDialog", [ "$modalDialog", "$controller", "$compile", function($modalDialog, $controller, $compile) {
-        return {
-            restrict: "ECA",
-            priority: -400,
-            link: function(scope, $element) {
-                var current = $modalDialog.current;
-                
-                if (ng.isDefined(current) && current !== null) {
-                    var locals = current.locals;
+    module.directive("modalDialog", ["$modalDialog", "$document", "$controller", "$compile", "DialogResult",
+        function ($modalDialog, $document, $controller, $compile, DialogResult) {
+            return {
+                restrict: "ECA",
+                priority: -400,
+                link: function(scope, $element) {
+                    var current = $modalDialog.current;
 
-                    $element.html('<div class="modal-dialog-wrapper" onclick="event.stopPropagation();">' + locals.$template + '</div>');
+                    if (ng.isDefined(current) && current !== null) {
+                        var locals = current.locals,
+                            cancellable = current.cancellable !== false
 
-                    var link = $compile($element.contents());
+                        scope.cancel = function() {
+                            scope.close(DialogResult.Cancelled);
+                        };
 
-                    if (current.controller) {
-                        locals.$scope = scope;
-                        var controller = $controller(current.controller, locals);
-                        if (current.controllerAs) {
-                            scope[current.controllerAs] = controller;
+                        $element.html(
+                            '<div class="modal-dialog-shadow"' + (cancellable ? ' ng-click="cancel()"' : '') + '></div>' +
+                            '<div class="modal-dialog-wrapper">' + (cancellable ? '<span class="modal-dialog-cancel" ng-click="cancel()">&nbsp;</span>' : '') + locals.$template + '</div>'
+                        );
+
+                        var link = $compile($element.contents());
+
+                        if (current.controller) {
+                            locals.$scope = scope;
+                            var controller = $controller(current.controller, locals);
+                            if (current.controllerAs) {
+                                scope[current.controllerAs] = controller;
+                            }
+                            $element.data("$ngControllerController", controller);
+                            $element.children().data("$ngControllerController", controller);
                         }
-                        $element.data("$ngControllerController", controller);
-                        $element.children().data("$ngControllerController", controller);
+
+                        link(scope);
                     }
-                    
-                    link(scope);
                 }
-            }
-        };
-    }]);
+            };
+        }
+    ]);
+
+    module.provider("$modalDialogParams", function() {
+        this.$get = function () { return { }; };
+    });
     
     module.provider("$modalDialog", function() {
         var dialogs = {};
@@ -131,9 +140,9 @@
             return this;
         };
         
-        this.$get = [ "$q", "$sce", "$rootScope", "$templateRequest", "DialogResult", get ];
+        this.$get = [ "$q", "$sce", "$rootScope", "$http", "$templateCache", "$modalDialogParams", "DialogResult", get ];
         
-        function get($q, $sce, $rootScope, $templateRequest, DialogResult) {
+        function get($q, $sce, $rootScope, $http, $templateCache, $modalDialogParams, DialogResult) {
             var prepared = null;
             
             var $modal = {
@@ -159,7 +168,7 @@
             }
             
             function show(name, params, callback) {
-                if (ng.isUndefined(callback)) {
+                if (ng.isUndefined(callback) && ng.isFunction(params)) {
                     callback = params;
                     params = {};
                 }
@@ -186,7 +195,9 @@
                         templateUrl = $sce.getTrustedResourceUrl(templateUrl);
                         if (ng.isDefined(templateUrl)) {
                             next.loadedTemplateUrl = templateUrl;
-                            template = $templateRequest(templateUrl);
+                            template = $http.get(templateUrl, {cache: $templateCache}).then(function(response) { 
+                                return response.data; 
+                            });
                         }
                     }
 
@@ -199,6 +210,7 @@
                         return next.callback(DialogResult.Cancelled);
                     
                     next.locals = locals;
+                    ng.copy(next.params, $modalDialogParams);
                     $rootScope.$broadcast("$dialogChangeSuccess", next, last);
                 }, function(error) {
                     if (next !== $modal.current) 
