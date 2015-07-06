@@ -5,45 +5,43 @@
         var policies = {};
         
         // Passive authentication
-        var passiveAuth = ["$q", "AuthService", "User", 
-            function($q, AuthService, User) {
-                var defer = $q.defer();
+        passiveAuth.$inject = ["$q", "AuthService", "User" ];
+        function passiveAuth($q, AuthService, User) {
+            var defer = $q.defer();
+            if (User.isAuthenticated())
+                defer.resolve();
+            else {
+                AuthService.passiveAuthenticate(function(success, user) {
+                    if (success) 
+                        User.login(user);
+                    return defer.resolve();
+                });
+            }
+            return defer.promise;
+        }
+
+        // Active authentication
+        activeAuth.$inject = [ "$q", "$state", "$modalDialog", "AuthService", "User" ];
+        function activeAuth($q, $state, $modalDialog, AuthService, User) {
+            var defer = $q.defer();
+
+            passiveAuth($q, AuthService, User).then(function() {
                 if (User.isAuthenticated())
                     defer.resolve();
                 else {
-                    AuthService.passiveAuthenticate(function(success, user) {
-                        if (success) 
-                            User.login(user);
-                        return defer.resolve();
+                    $modalDialog.show("login-dialog", function() {
+                        if (User.isAuthenticated())
+                            defer.resolve();
+                        else {
+                            defer.reject();
+                            $state.go("denied");
+                        }
                     });
                 }
-                return defer.promise;
-            }
-        ];
+            });
 
-        // Active authentication
-        var activeAuth = [ "$q", "$state", "$modalDialog", "AuthService", "User",
-            function($q, $state, $modalDialog, AuthService, User) {
-                var defer = $q.defer();
-
-                passiveAuth($q, AuthService, User).then(function() {
-                    if (User.isAuthenticated())
-                        defer.resolve();
-                    else {
-                        $modalDialog.show("login-dialog", function() {
-                            if (User.isAuthenticated())
-                                defer.resolve();
-                            else {
-                                defer.reject();
-                                $state.go("denied");
-                            }
-                        });
-                    }
-                });
-
-                return defer.promise;
-            }
-        ];
+            return defer.promise;
+        }
 
         this.decorator = function(name, func) {
             return $stateProvider.decorator.call(this, name, func);   
@@ -66,9 +64,9 @@
             var authenticate = def.authenticate !== false;
             
             if ("object" !== typeof(name)) {
-                // If the name indicates a child state, try inherit the auth policy of the
-                // immediate parent
-                if (name.indexOf(".") > 0) {
+                // If the current state is a child state, and no explicit 
+                // authentication has been set, inherit it from the parent state.
+                if (name.indexOf(".") > 0 && !def.hasOwnProperty("authenticate")) {
                     var parent = name.substring(0, name.lastIndexOf("."));
                     if (policies.hasOwnProperty(parent)) 
                         authenticate = policies[parent];
