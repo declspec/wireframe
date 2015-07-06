@@ -15,7 +15,7 @@ return array(
     // Core config
     "db" => array(
         "connectionString"  => $secret["db"]["connectionString"],
-        "username"          => $secret["db"]["user"],
+        "username"          => $secret["db"]["username"],
         "password"          => $secret["db"]["password"]
     ),
     "session" => array(
