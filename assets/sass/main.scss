@@ -7,20 +7,44 @@ body:last-child:after {
     clear: both;   
 }
 
-[modal-dialog], .modal-dialog { 
-    position: absolute;
-    top: 0; left: 0;
-    bottom: 0; right: 0;
-    background-color: rgba(0,0,0,0.6);
+[modal-dialog], .modal-dialog, .modal-dialog-shadow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+[modal-dialog], .modal-dialog {
+    z-index: 999;
+}
+
+.modal-dialog-shadow {
+    z-index: 998;
+    background: #999;
+    opacity: 0.8;
 }
 
 .modal-dialog-wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -70px;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+    z-index: 999;
+}
+
+.modal-dialog-cancel {
     position: absolute;
-    top: 50%; left: 50%;              
-    margin-top: -50px;
-    -webkit-transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);   
+    right: -15px;
+    top: -15px;
+    width: 36px;
+    height: 36px;
+    display: block;
+    background: url('../images/close-dialog.png') no-repeat;
+    cursor: pointer;
 }
 
 .ajax-loader {
